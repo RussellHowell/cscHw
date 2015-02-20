@@ -6,15 +6,6 @@ CREATE TABLE CLIENT
 	PhoneNumber varchar(10) NULL,
 	PRIMARY KEY (ClientId)
 );
-CREATE TABLE DEPARTMENT
-(
-	DepartmentId varchar(10) NOT NULL,
-	DepartmentName varchar(30) NULL,
-	NumberOfEmployees int NOT NULL,
-	PhoneNumber varchar(10) NOT NULL,
-	ManagerId varchar(10) NOT NULL,
-	PRIMARY KEY (DepartmentId)
-);
 CREATE TABLE EMPLOYEE
 (
 	EmployeeId varchar(10) NOT NULL,
@@ -31,10 +22,26 @@ CREATE TABLE EMPLOYEE
 	SupervisorId varchar(10) NULL,
 	DepartmentId varchar(10) NOT NULL,
 	PRIMARY KEY (EmployeeId),
-	CONSTRAINT fk_supervisor_id FOREIGN KEY (SupervisorId) REFERENCES EMPLOYEE(EmployeeId),
+	CONSTRAINT fk_supervisor_id FOREIGN KEY (SupervisorId) REFERENCES EMPLOYEE(EmployeeId)
+);
+CREATE TABLE DEPARTMENT
+(
+	DepartmentId varchar(10) NOT NULL,
+	DepartmentName varchar(30) NULL,
+	NumberOfEmployees int NOT NULL,
+	PhoneNumber varchar(10) NOT NULL,
+	ManagerId varchar(10) NOT NULL,
+	PRIMARY KEY (DepartmentId),
+	CONSTRAINT fk_manager_id FOREIGN KEY (ManagerId) REFERENCES EMPLOYEE(EmployeeId)
+);
+CREATE TABLE EMPLOYEE_DEPARTMENT
+(
+	EmployeeId varchar(10) NOT NULL,
+	DepartmentId varchar(10) NOT NULL,
+	PRIMARY KEY (EmployeeId, DepartmentId),
+	CONSTRAINT fk_employee_id FOREIGN KEY (EmployeeId) REFERENCES EMPLOYEE(EmployeeId),
 	CONSTRAINT fk_department_id FOREIGN KEY (DepartmentId) REFERENCES DEPARTMENT(DepartmentId)
 );
-ALTER TABLE DEPARTMENT ADD CONSTRAINT fk_manager_id FOREIGN KEY (ManagerId) REFERENCES EMPLOYEE(EmployeeId);
 CREATE TABLE ACCOUNT_TYPE
 (
 	AccountTypeId varchar(10) NOT NULL,
@@ -50,6 +57,15 @@ CREATE TABLE ACCOUNT
 	SetupDate timestamp(0) NOT NULL,
 	PRIMARY KEY (AccountId),
 	CONSTRAINT fk_account_type FOREIGN KEY (AccountType) REFERENCES ACCOUNT_TYPE(AccountTypeId)
+);
+CREATE TABLE EMPLOYEE_ACCOUNT
+(
+	EmployeeId varchar(10) NOT NULL,
+	AccountId varchar(10) NOT NULL,
+	StartDate date NOT NULL,
+	PRIMARY KEY (EmployeeId, AccountId),
+	CONSTRAINT fk_account_employee_id FOREIGN KEY (EmployeeId) REFERENCES EMPLOYEE(EmployeeId),
+	CONSTRAINT fk_account_id FOREIGN KEY (AccountId) REFERENCES ACCOUNT(AccountId)
 );
 CREATE TABLE PORTFOLIO
 (
@@ -119,4 +135,24 @@ CREATE TABLE PORTFOLIO_ITEM
 	CONSTRAINT fk_mutual_fund_id FOREIGN KEY (MutualFundId) REFERENCES MUTUAL_FUND(MutualFundId),
 	CONSTRAINT fk_stock_id FOREIGN KEY (StockId) REFERENCES STOCK(StockId),
 	CONSTRAINT fk_bond_id FOREIGN KEY (BondId) REFERENCES BOND(BondId)
+);
+CREATE TABLE TRANSACTION_TYPE
+(
+	TransTypeId varchar(10) NOT NULL,
+	TransTypeDescription varchar(30) NULL,
+	PRIMARY KEY (TransTypeId)
+);
+CREATE TABLE ITEM_TRANSACTION
+(
+	TransactionId char(16) NOT NULL,
+	TransactionTimestamp timestamp(0) NOT NULL,
+	TransactionType varchar(10) NOT NULL,
+	TransactionValue decimal (13,2) NOT NULL,
+	ByEmployeeId varchar(10) NOT NULL,
+	TransactionItemId varchar(10) NOT NULL,
+	Quantity int NOT NULL,
+	PRIMARY KEY (TransactionId),
+	CONSTRAINT fk_transaction_type FOREIGN KEY (TransactionType) REFERENCES TRANSACTION_TYPE(TransTypeId),
+	CONSTRAINT fk_by_employee_id FOREIGN KEY (ByEmployeeId) REFERENCES EMPLOYEE(EmployeeId),
+	CONSTRAINT fk_transaction_item FOREIGN KEY (TransactionItemId) REFERENCES PORTFOLIO_ITEM(PortfolioItemId)
 );
