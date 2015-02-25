@@ -145,14 +145,15 @@ CREATE TABLE TRANSACTION_TYPE
 CREATE TABLE ITEM_TRANSACTION
 (
 	TransactionId char(16) NOT NULL,
-	TransactionTimestamp timestamp(0) NOT NULL,
+	TransactionTimestamp timestamp(6) NOT NULL,
 	TransactionType varchar(10) NOT NULL,
 	TransactionValue decimal (13,2) NOT NULL,
 	ByEmployeeId varchar(10) NOT NULL,
 	TransactionItemId varchar(10) NOT NULL,
+	TransactionPortfolioId varchar(10) NOT NULL,
 	Quantity int NOT NULL,
 	PRIMARY KEY (TransactionId),
 	CONSTRAINT fk_transaction_type FOREIGN KEY (TransactionType) REFERENCES TRANSACTION_TYPE(TransTypeId),
 	CONSTRAINT fk_by_employee_id FOREIGN KEY (ByEmployeeId) REFERENCES EMPLOYEE(EmployeeId),
-	CONSTRAINT fk_transaction_item FOREIGN KEY (TransactionItemId) REFERENCES PORTFOLIO_ITEM(PortfolioItemId)
+	CONSTRAINT fk_transaction_portfolio_item FOREIGN KEY (TransactionItemId, TransactionPortfolioId) REFERENCES PORTFOLIO_ITEM(PortfolioItemId, PortfolioId)
 );
